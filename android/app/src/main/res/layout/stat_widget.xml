@@ -1,0 +1,191 @@
+<!-- ─────────────────────────────────────────────────────────────────────────
+     stat_widget.xml — Android Home Widget Layout (2×2)
+     Black background, cyan #00E5FF text, 3 stat rows.
+     Each row: name TextView, level TextView, horizontal ProgressBar, + button.
+     ───────────────────────────────────────────────────────────────────────── -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#000000"
+    android:padding="8dp">
+
+    <!-- ── Title ── -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="LIFE IS GAME"
+        android:textColor="#00E5FF"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:fontFamily="monospace"
+        android:gravity="center"
+        android:letterSpacing="0.15"
+        android:paddingBottom="4dp" />
+
+    <!-- ── Stat Row 0 ── -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp">
+
+        <TextView
+            android:id="@+id/stat_name_0"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:text="---"
+            android:textColor="#00E5FF"
+            android:textSize="10sp"
+            android:fontFamily="monospace"
+            android:singleLine="true"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/stat_level_0"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="LVL 0"
+            android:textColor="#00E5FF"
+            android:textSize="9sp"
+            android:fontFamily="monospace"
+            android:gravity="center" />
+
+        <ProgressBar
+            android:id="@+id/stat_bar_0"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="8dp"
+            android:layout_weight="3"
+            android:max="10"
+            android:progress="0"
+            android:progressTint="#00E5FF"
+            android:progressBackgroundTint="#333333" />
+
+        <ImageButton
+            android:id="@+id/stat_btn_0"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@android:drawable/ic_input_add"
+            android:background="@android:color/transparent"
+            android:contentDescription="Increment stat 1"
+            android:scaleType="centerInside"
+            android:layout_marginStart="4dp" />
+    </LinearLayout>
+
+    <!-- ── Stat Row 1 ── -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp">
+
+        <TextView
+            android:id="@+id/stat_name_1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:text="---"
+            android:textColor="#00E5FF"
+            android:textSize="10sp"
+            android:fontFamily="monospace"
+            android:singleLine="true"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/stat_level_1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="LVL 0"
+            android:textColor="#00E5FF"
+            android:textSize="9sp"
+            android:fontFamily="monospace"
+            android:gravity="center" />
+
+        <ProgressBar
+            android:id="@+id/stat_bar_1"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="8dp"
+            android:layout_weight="3"
+            android:max="10"
+            android:progress="0"
+            android:progressTint="#00E5FF"
+            android:progressBackgroundTint="#333333" />
+
+        <ImageButton
+            android:id="@+id/stat_btn_1"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@android:drawable/ic_input_add"
+            android:background="@android:color/transparent"
+            android:contentDescription="Increment stat 2"
+            android:scaleType="centerInside"
+            android:layout_marginStart="4dp" />
+    </LinearLayout>
+
+    <!-- ── Stat Row 2 ── -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp">
+
+        <TextView
+            android:id="@+id/stat_name_2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:text="---"
+            android:textColor="#00E5FF"
+            android:textSize="10sp"
+            android:fontFamily="monospace"
+            android:singleLine="true"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/stat_level_2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="LVL 0"
+            android:textColor="#00E5FF"
+            android:textSize="9sp"
+            android:fontFamily="monospace"
+            android:gravity="center" />
+
+        <ProgressBar
+            android:id="@+id/stat_bar_2"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="8dp"
+            android:layout_weight="3"
+            android:max="10"
+            android:progress="0"
+            android:progressTint="#00E5FF"
+            android:progressBackgroundTint="#333333" />
+
+        <ImageButton
+            android:id="@+id/stat_btn_2"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@android:drawable/ic_input_add"
+            android:background="@android:color/transparent"
+            android:contentDescription="Increment stat 3"
+            android:scaleType="centerInside"
+            android:layout_marginStart="4dp" />
+    </LinearLayout>
+
+</LinearLayout>

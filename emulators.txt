@@ -1,0 +1,12 @@
+﻿1 available emulator:
+
+Id                                                                                                                                             ΓÇó Name                                                                                                                                           ΓÇó Manufacturer ΓÇó Platform
+
+INFO    | Storing crashdata in: C:\Users\Ram\AppData\Local\Temp\\AndroidEmulator\emu-crash-34.2.16.db, detection is enabled for process: 38484 ΓÇó INFO    | Storing crashdata in: C:\Users\Ram\AppData\Local\Temp\\AndroidEmulator\emu-crash-34.2.16.db, detection is enabled for process: 38484 ΓÇó              ΓÇó android
+
+To run an emulator, run 'flutter emulators --launch <emulator id>'.
+To create a new emulator, run 'flutter emulators --create [--name xyz]'.
+
+You can find more information on managing emulators at the links below:
+  https://developer.android.com/studio/run/managing-avds
+  https://developer.android.com/studio/command-line/avdmanager

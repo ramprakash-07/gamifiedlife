@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ─────────────────────────────────────────────────────────────────────────
+     stat_widget_info.xml — AppWidgetProviderInfo
+     2×2 minimum size, no periodic updates (updatePeriodMillis=0).
+     ───────────────────────────────────────────────────────────────────────── -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="110dp"
+    android:minHeight="110dp"
+    android:updatePeriodMillis="0"
+    android:initialLayout="@layout/stat_widget"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen"
+    android:previewImage="@android:drawable/ic_menu_info_details"
+    android:description="@string/app_name" />
