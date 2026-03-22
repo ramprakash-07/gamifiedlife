@@ -30,7 +30,7 @@ class NotificationService {
     tz.setLocalLocation(tz.getLocation(timeZoneName));
 
     const androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+      AndroidInitializationSettings('@drawable/ic_launcher');
 
     const initSettings = InitializationSettings(android: androidSettings);
 
@@ -85,7 +85,7 @@ class NotificationService {
       channelDescription: 'Scheduled quest reminders',
       importance: Importance.high,
       priority: Priority.high,
-      icon: '@mipmap/ic_launcher',
+      icon: '@drawable/ic_launcher',
     );
 
     const details = NotificationDetails(android: androidDetails);
