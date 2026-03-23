@@ -1,9 +1,13 @@
 // ─────────────────────────────────────────────────────────────────────────────
-//  Personal OS v2.0 — Life Is Game
-//  App shell: BottomNavigationBar + IndexedStack (state-preserving tabs)
+//  Personal OS v3.0 — Life Is Game
+//  App shell: Provider + BottomNavigationBar + IndexedStack
+//  Stat decay runs on startup
 // ─────────────────────────────────────────────────────────────────────────────
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'database_helper.dart';
+import 'game_provider.dart';
 import 'notification_service.dart';
 import 'screens/evolution_screen.dart';
 import 'screens/finance_screen.dart';
@@ -20,7 +24,16 @@ const String kFontFamily = 'Courier';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService.instance.initialize();
-  runApp(const LifeIsGameApp());
+
+  // Apply stat decay on every app launch (deducts 1 XP if 48h+ since update)
+  await DatabaseHelper.instance.applyStatDecay();
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => GameProvider()..loadAll(),
+      child: const LifeIsGameApp(),
+    ),
+  );
 }
 
 class LifeIsGameApp extends StatelessWidget {
@@ -80,8 +93,35 @@ class _AppShellState extends State<AppShell> {
 
   @override
   Widget build(BuildContext context) {
+    // Credits badge in the app bar
+    final credits = context.watch<GameProvider>().credits;
+
     return Scaffold(
-      appBar: AppBar(title: Text(_titles[_currentIndex])),
+      appBar: AppBar(
+        title: Text(_titles[_currentIndex]),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.monetization_on, color: Color(0xFFFFD700), size: 18),
+                const SizedBox(width: 4),
+                Text(
+                  '$credits',
+                  style: const TextStyle(
+                    color: Color(0xFFFFD700),
+                    fontFamily: kFontFamily,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
       body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -119,8 +159,8 @@ class _AppShellState extends State<AppShell> {
               label: 'FINANCE',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.notifications_none_rounded),
-              activeIcon: Icon(Icons.notifications_active),
+              icon: Icon(Icons.timer_outlined),
+              activeIcon: Icon(Icons.timer),
               label: 'FOCUS',
             ),
             BottomNavigationBarItem(
