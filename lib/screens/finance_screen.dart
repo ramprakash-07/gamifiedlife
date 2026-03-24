@@ -1,18 +1,13 @@
 // ─────────────────────────────────────────────────────────────────────────────
 //  Finance Screen — Expense Tracker with Line & Pie Charts
-//  BottomSheet input · fl_chart visualizations · Swipe-to-delete
+//  Glassmorphism cards · Orbitron/Inter fonts · 8pt grid
 // ─────────────────────────────────────────────────────────────────────────────
 
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import '../database_helper.dart';
-
-const Color _kBg = Color(0xFF0A0A0A);
-const Color _kAccent = Color(0xFF00E5FF);
-const Color _kCardBg = Color(0xFF141414);
-const Color _kTextDim = Color(0xFF888888);
-const String _kFont = 'Courier';
+import '../theme/app_theme.dart';
 
 const List<String> _categories = [
   'Food',
@@ -31,7 +26,7 @@ const List<Color> _categoryColors = [
   Color(0xFF95E1D3), // Health
   Color(0xFFA29BFE), // Education
   Color(0xFFFF85A2), // Entertainment
-  Color(0xFF888888), // Other
+  Color(0xFF6B7A8D), // Other
 ];
 
 class FinanceScreen extends StatefulWidget {
@@ -75,9 +70,9 @@ class _FinanceScreenState extends State<FinanceScreen> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: _kCardBg,
+      backgroundColor: glassDialogBg,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       isScrollControlled: true,
       builder: (ctx) {
@@ -99,52 +94,39 @@ class _FinanceScreenState extends State<FinanceScreen> {
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: _kTextDim.withOpacity(0.4),
+                        color: kNeonCyan.withOpacity(0.3),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  const Text(
+                  const SizedBox(height: 24),
+                  Text(
                     'LOG EXPENSE',
-                    style: TextStyle(
-                      color: _kAccent,
-                      fontFamily: _kFont,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 3,
-                    ),
+                    style: orbitronStyle(fontSize: 16, letterSpacing: 3),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
                   TextField(
                     controller: amountController,
                     keyboardType:
                         const TextInputType.numberWithOptions(decimal: true),
                     autofocus: true,
-                    style: const TextStyle(
+                    style: interStyle(
                       color: Colors.white,
-                      fontFamily: _kFont,
                       fontSize: 24,
+                      fontWeight: FontWeight.w300,
                     ),
-                    cursorColor: _kAccent,
-                    decoration: InputDecoration(
-                      prefixText: '₹ ',
-                      prefixStyle: TextStyle(
-                        color: _kAccent.withOpacity(0.7),
-                        fontFamily: _kFont,
-                        fontSize: 24,
-                      ),
+                    cursorColor: kNeonCyan,
+                    decoration: glassInputDecoration(
                       hintText: '0.00',
-                      hintStyle: TextStyle(color: _kTextDim.withOpacity(0.5)),
-                      enabledBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: _kAccent),
-                      ),
-                      focusedBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: _kAccent, width: 2),
+                      prefixText: '₹ ',
+                      prefixStyle: interStyle(
+                        color: kNeonCyan.withOpacity(0.7),
+                        fontSize: 24,
+                        fontWeight: FontWeight.w300,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
@@ -158,29 +140,28 @@ class _FinanceScreenState extends State<FinanceScreen> {
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 8),
+                              horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? _categoryColors[entry.key].withOpacity(0.2)
-                                : Colors.white.withOpacity(0.05),
+                                ? _categoryColors[entry.key].withOpacity(0.15)
+                                : Colors.white.withOpacity(0.04),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
                               color: isSelected
                                   ? _categoryColors[entry.key]
-                                  : Colors.white.withOpacity(0.1),
+                                  : Colors.white.withOpacity(0.08),
                             ),
                           ),
                           child: Text(
                             entry.value,
-                            style: TextStyle(
+                            style: interStyle(
                               color: isSelected
                                   ? _categoryColors[entry.key]
-                                  : _kTextDim,
-                              fontFamily: _kFont,
+                                  : kDimText,
                               fontSize: 12,
                               fontWeight: isSelected
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
+                                  ? FontWeight.w600
+                                  : FontWeight.w400,
                             ),
                           ),
                         ),
@@ -192,11 +173,14 @@ class _FinanceScreenState extends State<FinanceScreen> {
                     width: double.infinity,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _kAccent,
-                        foregroundColor: _kBg,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        backgroundColor: kNeonCyan.withOpacity(0.15),
+                        foregroundColor: kNeonCyan,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
+                          side: BorderSide(
+                              color: kNeonCyan.withOpacity(0.3)),
                         ),
                       ),
                       onPressed: () async {
@@ -214,12 +198,10 @@ class _FinanceScreenState extends State<FinanceScreen> {
                         if (mounted) Navigator.pop(ctx);
                         _loadExpenses();
                       },
-                      child: const Text(
+                      child: Text(
                         'ADD EXPENSE',
-                        style: TextStyle(
-                          fontFamily: _kFont,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                        style: orbitronStyle(
+                          fontSize: 12,
                           letterSpacing: 2,
                         ),
                       ),
@@ -233,8 +215,6 @@ class _FinanceScreenState extends State<FinanceScreen> {
       },
     );
   }
-
-  // ── Build daily spending data for line chart ───────────────────────────
 
   List<FlSpot> _buildDailySpots() {
     final now = DateTime.now();
@@ -253,8 +233,6 @@ class _FinanceScreenState extends State<FinanceScreen> {
       (i) => FlSpot(i.toDouble(), dailyTotals[i]),
     );
   }
-
-  // ── Build category data for pie chart ──────────────────────────────────
 
   List<PieChartSectionData> _buildPieSections() {
     final Map<String, double> categoryTotals = {};
@@ -275,11 +253,10 @@ class _FinanceScreenState extends State<FinanceScreen> {
         value: entry.value,
         color: color,
         title: '${percentage.toStringAsFixed(0)}%',
-        titleStyle: const TextStyle(
+        titleStyle: interStyle(
           color: Colors.white,
-          fontFamily: _kFont,
           fontSize: 10,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w700,
         ),
         radius: 50,
       );
@@ -289,8 +266,9 @@ class _FinanceScreenState extends State<FinanceScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Center(
-          child: CircularProgressIndicator(color: _kAccent));
+      return Center(
+          child: CircularProgressIndicator(
+              color: kNeonCyan, strokeWidth: 2));
     }
 
     final now = DateTime.now();
@@ -304,12 +282,12 @@ class _FinanceScreenState extends State<FinanceScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.account_balance_wallet_outlined,
-                      color: _kAccent.withOpacity(0.3), size: 64),
+                      color: kNeonCyan.withOpacity(0.3), size: 64),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'No expenses logged.\nTap + to track spending.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: _kTextDim, fontSize: 16),
+                    style: interStyle(color: kDimText, fontSize: 16),
                   ),
                 ],
               ),
@@ -318,33 +296,23 @@ class _FinanceScreenState extends State<FinanceScreen> {
               padding: const EdgeInsets.all(16),
               children: [
                 // ── Month header ──
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: _kCardBg,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: _kAccent.withOpacity(0.15)),
-                  ),
+                GlassCard(
+                  padding: const EdgeInsets.all(20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         monthLabel.toUpperCase(),
-                        style: const TextStyle(
-                          color: _kAccent,
-                          fontFamily: _kFont,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                        style: orbitronStyle(
+                          fontSize: 12,
                           letterSpacing: 2,
                         ),
                       ),
                       Text(
                         '₹ ${_totalMonth.toStringAsFixed(2)}',
-                        style: const TextStyle(
+                        style: orbitronStyle(
+                          fontSize: 18,
                           color: Colors.white,
-                          fontFamily: _kFont,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
@@ -353,106 +321,99 @@ class _FinanceScreenState extends State<FinanceScreen> {
                 const SizedBox(height: 16),
 
                 // ── Daily spending line chart ──
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  height: 220,
-                  decoration: BoxDecoration(
-                    color: _kCardBg,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: _kAccent.withOpacity(0.15)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'DAILY SPENDING',
-                        style: TextStyle(
-                          color: _kTextDim,
-                          fontFamily: _kFont,
-                          fontSize: 11,
-                          letterSpacing: 2,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Expanded(
-                        child: LineChart(
-                          LineChartData(
-                            gridData: FlGridData(
-                              show: true,
-                              drawVerticalLine: false,
-                              getDrawingHorizontalLine: (value) => FlLine(
-                                color: Colors.white.withOpacity(0.05),
-                                strokeWidth: 1,
-                              ),
-                            ),
-                            titlesData: FlTitlesData(
-                              rightTitles: const AxisTitles(
-                                  sideTitles: SideTitles(showTitles: false)),
-                              topTitles: const AxisTitles(
-                                  sideTitles: SideTitles(showTitles: false)),
-                              leftTitles: const AxisTitles(
-                                  sideTitles: SideTitles(showTitles: false)),
-                              bottomTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                  showTitles: true,
-                                  reservedSize: 22,
-                                  interval: 5,
-                                  getTitlesWidget: (value, meta) {
-                                    final day = value.toInt() + 1;
-                                    return Text(
-                                      '$day',
-                                      style: TextStyle(
-                                        color: _kTextDim.withOpacity(0.6),
-                                        fontSize: 9,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                            borderData: FlBorderData(show: false),
-                            lineBarsData: [
-                              LineChartBarData(
-                                spots: _buildDailySpots(),
-                                isCurved: true,
-                                color: _kAccent,
-                                barWidth: 2,
-                                dotData: const FlDotData(show: false),
-                                belowBarData: BarAreaData(
-                                  show: true,
-                                  color: _kAccent.withOpacity(0.08),
-                                ),
-                              ),
-                            ],
+                GlassCard(
+                  padding: const EdgeInsets.all(20),
+                  child: SizedBox(
+                    height: 200,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'DAILY SPENDING',
+                          style: orbitronStyle(
+                            fontSize: 10,
+                            color: kDimText,
+                            letterSpacing: 2,
                           ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 16),
+                        Expanded(
+                          child: LineChart(
+                            LineChartData(
+                              gridData: FlGridData(
+                                show: true,
+                                drawVerticalLine: false,
+                                getDrawingHorizontalLine: (value) => FlLine(
+                                  color: Colors.white.withOpacity(0.04),
+                                  strokeWidth: 1,
+                                ),
+                              ),
+                              titlesData: FlTitlesData(
+                                rightTitles: const AxisTitles(
+                                    sideTitles:
+                                        SideTitles(showTitles: false)),
+                                topTitles: const AxisTitles(
+                                    sideTitles:
+                                        SideTitles(showTitles: false)),
+                                leftTitles: const AxisTitles(
+                                    sideTitles:
+                                        SideTitles(showTitles: false)),
+                                bottomTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    showTitles: true,
+                                    reservedSize: 22,
+                                    interval: 5,
+                                    getTitlesWidget: (value, meta) {
+                                      final day = value.toInt() + 1;
+                                      return Text(
+                                        '$day',
+                                        style: interStyle(
+                                          color: kDimText.withOpacity(0.6),
+                                          fontSize: 9,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                              borderData: FlBorderData(show: false),
+                              lineBarsData: [
+                                LineChartBarData(
+                                  spots: _buildDailySpots(),
+                                  isCurved: true,
+                                  color: kNeonCyan,
+                                  barWidth: 2,
+                                  dotData: const FlDotData(show: false),
+                                  belowBarData: BarAreaData(
+                                    show: true,
+                                    color: kNeonCyan.withOpacity(0.06),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
 
                 // ── Category pie chart ──
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: _kCardBg,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: _kAccent.withOpacity(0.15)),
-                  ),
+                GlassCard(
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'BY CATEGORY',
-                        style: TextStyle(
-                          color: _kTextDim,
-                          fontFamily: _kFont,
-                          fontSize: 11,
+                        style: orbitronStyle(
+                          fontSize: 10,
+                          color: kDimText,
                           letterSpacing: 2,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       SizedBox(
                         height: 180,
                         child: PieChart(
@@ -463,29 +424,28 @@ class _FinanceScreenState extends State<FinanceScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       // Legend
                       Wrap(
                         spacing: 12,
-                        runSpacing: 6,
+                        runSpacing: 8,
                         children: _categories.asMap().entries.map((entry) {
                           return Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Container(
-                                width: 10,
-                                height: 10,
+                                width: 8,
+                                height: 8,
                                 decoration: BoxDecoration(
                                   color: _categoryColors[entry.key],
                                   shape: BoxShape.circle,
                                 ),
                               ),
-                              const SizedBox(width: 4),
+                              const SizedBox(width: 6),
                               Text(
                                 entry.value,
-                                style: const TextStyle(
-                                  color: _kTextDim,
-                                  fontFamily: _kFont,
+                                style: interStyle(
+                                  color: kDimText,
                                   fontSize: 10,
                                 ),
                               ),
@@ -496,15 +456,14 @@ class _FinanceScreenState extends State<FinanceScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
 
                 // ── Recent expenses list ──
-                const Text(
+                Text(
                   'RECENT',
-                  style: TextStyle(
-                    color: _kTextDim,
-                    fontFamily: _kFont,
-                    fontSize: 11,
+                  style: orbitronStyle(
+                    fontSize: 10,
+                    color: kDimText,
                     letterSpacing: 2,
                   ),
                 ),
@@ -523,58 +482,54 @@ class _FinanceScreenState extends State<FinanceScreen> {
                       padding: const EdgeInsets.only(right: 16),
                       margin: const EdgeInsets.only(bottom: 8),
                       decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(10),
+                        color: kHardRed.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(24),
                       ),
-                      child: const Icon(Icons.delete_outline,
-                          color: Colors.red),
+                      child:
+                          Icon(Icons.delete_outline, color: kHardRed),
                     ),
                     onDismissed: (_) async {
                       await DatabaseHelper.instance
                           .deleteExpense(expense.id!);
                       _loadExpenses();
                     },
-                    child: Container(
+                    child: GlassCard(
                       margin: const EdgeInsets.only(bottom: 8),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 12),
-                      decoration: BoxDecoration(
-                        color: _kCardBg,
-                        borderRadius: BorderRadius.circular(10),
-                        border:
-                            Border.all(color: color.withOpacity(0.15)),
-                      ),
+                          horizontal: 16, vertical: 14),
+                      borderColor: color,
+                      borderOpacity: 0.12,
                       child: Row(
                         children: [
                           Container(
-                            width: 8,
+                            width: 6,
                             height: 32,
                             decoration: BoxDecoration(
                               color: color,
-                              borderRadius: BorderRadius.circular(4),
+                              borderRadius: BorderRadius.circular(3),
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: 16),
                           Expanded(
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   expense.category.toUpperCase(),
-                                  style: TextStyle(
+                                  style: interStyle(
                                     color: color,
-                                    fontFamily: _kFont,
                                     fontSize: 12,
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight: FontWeight.w600,
                                     letterSpacing: 1,
                                   ),
                                 ),
+                                const SizedBox(height: 2),
                                 Text(
                                   DateFormat('dd MMM, hh:mm a')
                                       .format(expense.date),
-                                  style: TextStyle(
-                                    color: _kTextDim.withOpacity(0.6),
-                                    fontFamily: _kFont,
+                                  style: interStyle(
+                                    color: kDimText.withOpacity(0.6),
                                     fontSize: 10,
                                   ),
                                 ),
@@ -583,11 +538,10 @@ class _FinanceScreenState extends State<FinanceScreen> {
                           ),
                           Text(
                             '₹ ${expense.amount.toStringAsFixed(2)}',
-                            style: const TextStyle(
+                            style: interStyle(
                               color: Colors.white,
-                              fontFamily: _kFont,
                               fontSize: 14,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ],
@@ -598,11 +552,9 @@ class _FinanceScreenState extends State<FinanceScreen> {
                 const SizedBox(height: 80), // FAB clearance
               ],
             ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: GlassFAB(
         heroTag: 'finance_fab',
-        backgroundColor: _kAccent,
         onPressed: _showAddExpenseSheet,
-        child: const Icon(Icons.add, color: _kBg, size: 28),
       ),
     );
   }

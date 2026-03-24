@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────────────────────
 //  Nucleus Screen — Profile, Rewards Shop & Data Export
-//  Credits-based reward system · Excel export with share_plus
+//  Glassmorphism cards · Orbitron/Inter fonts · 8pt grid
 // ─────────────────────────────────────────────────────────────────────────────
 
 import 'dart:io';
@@ -12,13 +12,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
 import '../database_helper.dart';
 import '../game_provider.dart';
-
-const Color _kBg = Color(0xFF0A0A0A);
-const Color _kAccent = Color(0xFF00E5FF);
-const Color _kGold = Color(0xFFFFD700);
-const Color _kCardBg = Color(0xFF141414);
-const Color _kTextDim = Color(0xFF888888);
-const String _kFont = 'Courier';
+import '../theme/app_theme.dart';
 
 class NucleusScreen extends StatefulWidget {
   const NucleusScreen({super.key});
@@ -90,8 +84,12 @@ class _NucleusScreenState extends State<NucleusScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Export failed: $e'),
-          backgroundColor: Colors.red.shade800,
+          content: Text('Export failed: $e',
+              style: interStyle(color: Colors.white, fontSize: 13)),
+          backgroundColor: kHardRed.withOpacity(0.3),
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ));
       }
     } finally {
@@ -106,49 +104,36 @@ class _NucleusScreenState extends State<NucleusScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: _kCardBg,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('NEW REWARD',
-            style: TextStyle(
-                color: _kAccent,
-                fontFamily: _kFont,
-                letterSpacing: 3,
-                fontSize: 18)),
+        backgroundColor: glassDialogBg,
+        shape: glassDialogShape,
+        title: Text('NEW REWARD',
+            style: orbitronStyle(fontSize: 16, letterSpacing: 3)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: titleCtrl,
               autofocus: true,
-              style:
-                  const TextStyle(color: Colors.white, fontFamily: _kFont),
-              cursorColor: _kAccent,
-              decoration: const InputDecoration(
-                hintText: 'Reward name...',
-                hintStyle: TextStyle(color: _kTextDim),
-                enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: _kAccent)),
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: _kAccent, width: 2)),
-              ),
+              style: interStyle(color: Colors.white),
+              cursorColor: kNeonCyan,
+              decoration: glassInputDecoration(hintText: 'Reward name...'),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: costCtrl,
               keyboardType: TextInputType.number,
-              style:
-                  const TextStyle(color: Colors.white, fontFamily: _kFont),
-              cursorColor: _kGold,
+              style: interStyle(color: Colors.white),
+              cursorColor: kGold,
               decoration: InputDecoration(
                 hintText: 'Cost in credits...',
-                hintStyle: const TextStyle(color: _kTextDim),
+                hintStyle: interStyle(color: kDimText, fontSize: 14),
                 prefixIcon: Icon(Icons.monetization_on,
-                    color: _kGold.withOpacity(0.6), size: 20),
-                enabledBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: _kGold)),
+                    color: kGold.withOpacity(0.6), size: 20),
+                enabledBorder: UnderlineInputBorder(
+                    borderSide:
+                        BorderSide(color: kGold.withOpacity(0.3))),
                 focusedBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: _kGold, width: 2)),
+                    borderSide: BorderSide(color: kGold, width: 2)),
               ),
             ),
           ],
@@ -156,7 +141,8 @@ class _NucleusScreenState extends State<NucleusScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('CANCEL', style: TextStyle(color: _kTextDim)),
+            child: Text('CANCEL',
+                style: interStyle(color: kDimText, fontSize: 12)),
           ),
           TextButton(
             onPressed: () {
@@ -168,7 +154,8 @@ class _NucleusScreenState extends State<NucleusScreen> {
                   .addReward(title: title, cost: cost);
               Navigator.pop(ctx);
             },
-            child: const Text('CREATE', style: TextStyle(color: _kAccent)),
+            child: Text('CREATE',
+                style: orbitronStyle(fontSize: 12, color: kNeonCyan)),
           ),
         ],
       ),
@@ -182,119 +169,114 @@ class _NucleusScreenState extends State<NucleusScreen> {
       body: Consumer<GameProvider>(
         builder: (context, gp, _) {
           return ListView(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             children: [
               // ── Profile Card ──
-              Container(
+              GlassCard(
                 padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: _kCardBg,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: _kAccent.withOpacity(0.2)),
-                  boxShadow: [
-                    BoxShadow(
-                        color: _kAccent.withOpacity(0.08),
-                        blurRadius: 20,
-                        spreadRadius: 2)
-                  ],
-                ),
+                borderColor: kNeonCyan,
+                borderOpacity: 0.2,
+                extraShadows: [
+                  BoxShadow(
+                      color: kNeonCyan.withOpacity(0.08),
+                      blurRadius: 24,
+                      spreadRadius: 4)
+                ],
                 child: Column(children: [
                   Container(
                     width: 80,
                     height: 80,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                          colors: [_kAccent, _kAccent.withOpacity(0.4)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight),
+                      border:
+                          Border.all(color: kNeonCyan.withOpacity(0.3), width: 2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: kNeonCyan.withOpacity(0.2),
+                          blurRadius: 20,
+                          spreadRadius: 4,
+                        ),
+                      ],
                     ),
-                    child: const Icon(Icons.person,
-                        color: _kBg, size: 40),
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/logo/app_logo.png',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 16),
-                  const Text('GEMINI',
-                      style: TextStyle(
+                  Text('GEMINI',
+                      style: orbitronStyle(
+                          fontSize: 20,
                           color: Colors.white,
-                          fontFamily: _kFont,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
                           letterSpacing: 4)),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 8),
                   Text('USER PROFILE',
-                      style: TextStyle(
-                          color: _kAccent.withOpacity(0.6),
-                          fontFamily: _kFont,
-                          fontSize: 11,
+                      style: orbitronStyle(
+                          fontSize: 10,
+                          color: kNeonCyan.withOpacity(0.6),
                           letterSpacing: 3)),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
                   _profileRow(Icons.school, 'College', 'Sri Sairam'),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   _profileRow(Icons.devices, 'Device', 'Vivo Y200'),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   _profileRow(Icons.code, 'Version', '3.0.0'),
                 ]),
               ),
               const SizedBox(height: 24),
 
               // ── Rewards Shop ──
-              _sectionHeader('REWARDS SHOP', Icons.store),
+              const SectionHeader(title: 'REWARDS SHOP', icon: Icons.store),
               const SizedBox(height: 8),
               // Credits banner
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: _kCardBg,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: _kGold.withOpacity(0.2)),
-                  boxShadow: [
-                    BoxShadow(
-                        color: _kGold.withOpacity(0.06),
-                        blurRadius: 12,
-                        spreadRadius: 1)
-                  ],
-                ),
+              GlassCard(
+                padding: const EdgeInsets.all(20),
+                borderColor: kGold,
+                borderOpacity: 0.15,
+                extraShadows: [
+                  BoxShadow(
+                      color: kGold.withOpacity(0.06),
+                      blurRadius: 16,
+                      spreadRadius: 1)
+                ],
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(Icons.monetization_on,
-                        color: _kGold, size: 28),
-                    const SizedBox(width: 10),
+                        color: kGold, size: 28),
+                    const SizedBox(width: 12),
                     Text(
                       '${gp.credits}',
-                      style: const TextStyle(
-                        color: _kGold,
-                        fontFamily: _kFont,
+                      style: orbitronStyle(
                         fontSize: 28,
-                        fontWeight: FontWeight.bold,
+                        color: kGold,
                         letterSpacing: 2,
                       ),
                     ),
                     const SizedBox(width: 8),
                     Text(
                       'CREDITS',
-                      style: TextStyle(
-                        color: _kGold.withOpacity(0.6),
-                        fontFamily: _kFont,
-                        fontSize: 11,
+                      style: orbitronStyle(
+                        fontSize: 10,
+                        color: kGold.withOpacity(0.6),
                         letterSpacing: 2,
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               // Reward items
               if (gp.rewards.isEmpty)
-                Container(
+                Padding(
                   padding: const EdgeInsets.all(24),
                   child: Center(
                     child: Text(
                       'No rewards yet. Create your first reward!',
-                      style: TextStyle(
-                          color: _kTextDim.withOpacity(0.7),
-                          fontSize: 13,
-                          fontFamily: _kFont),
+                      style: interStyle(
+                          color: kDimText.withOpacity(0.7), fontSize: 13),
                     ),
                   ),
                 )
@@ -309,20 +291,26 @@ class _NucleusScreenState extends State<NucleusScreen> {
                               .showSnackBar(SnackBar(
                             content: Text(
                               '🎁 Redeemed: ${reward.title}',
-                              style: const TextStyle(fontFamily: _kFont),
+                              style: interStyle(
+                                  color: Colors.white, fontSize: 13),
                             ),
-                            backgroundColor: _kGold.withOpacity(0.3),
+                            backgroundColor: kGold.withOpacity(0.2),
                             behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16)),
                           ));
                         } else if (mounted && !success) {
                           ScaffoldMessenger.of(context)
                               .showSnackBar(SnackBar(
-                            content: const Text(
+                            content: Text(
                               'Not enough credits!',
-                              style: TextStyle(fontFamily: _kFont),
+                              style: interStyle(
+                                  color: Colors.white, fontSize: 13),
                             ),
-                            backgroundColor: Colors.red.withOpacity(0.3),
+                            backgroundColor: kHardRed.withOpacity(0.2),
                             behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16)),
                           ));
                         }
                       },
@@ -334,60 +322,53 @@ class _NucleusScreenState extends State<NucleusScreen> {
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: _kAccent,
-                    side: BorderSide(color: _kAccent.withOpacity(0.3)),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    foregroundColor: kNeonCyan,
+                    side: BorderSide(color: kNeonCyan.withOpacity(0.2)),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                        borderRadius: BorderRadius.circular(16)),
                   ),
                   onPressed: _showAddRewardDialog,
                   icon: const Icon(Icons.add, size: 18),
-                  label: const Text('ADD REWARD',
-                      style: TextStyle(
-                          fontFamily: _kFont,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
+                  label: Text('ADD REWARD',
+                      style: orbitronStyle(
+                          fontSize: 11,
                           letterSpacing: 2)),
                 ),
               ),
               const SizedBox(height: 24),
 
               // ── Export Card ──
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: _kCardBg,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: _kAccent.withOpacity(0.15)),
-                ),
+              GlassCard(
+                padding: const EdgeInsets.all(24),
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('DATA EXPORT',
-                          style: TextStyle(
-                              color: _kAccent,
-                              fontFamily: _kFont,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
+                      Text('DATA EXPORT',
+                          style: orbitronStyle(
+                              fontSize: 13,
                               letterSpacing: 2)),
                       const SizedBox(height: 8),
                       Text(
                           'Export all stats and expenses to an Excel file.',
-                          style: TextStyle(
-                              color: _kTextDim.withOpacity(0.7),
-                              fontFamily: _kFont,
+                          style: interStyle(
+                              color: kDimText.withOpacity(0.7),
                               fontSize: 12)),
                       const SizedBox(height: 16),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: _kAccent,
-                            foregroundColor: _kBg,
+                            backgroundColor: kNeonCyan.withOpacity(0.15),
+                            foregroundColor: kNeonCyan,
+                            elevation: 0,
                             padding:
-                                const EdgeInsets.symmetric(vertical: 14),
+                                const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12)),
+                              borderRadius: BorderRadius.circular(16),
+                              side: BorderSide(
+                                  color: kNeonCyan.withOpacity(0.3)),
+                            ),
                           ),
                           onPressed: _exporting ? null : _exportData,
                           icon: _exporting
@@ -395,17 +376,15 @@ class _NucleusScreenState extends State<NucleusScreen> {
                                   width: 18,
                                   height: 18,
                                   child: CircularProgressIndicator(
-                                      strokeWidth: 2, color: _kBg))
+                                      strokeWidth: 2, color: kNeonCyan))
                               : const Icon(
                                   Icons.file_download_outlined),
                           label: Text(
                               _exporting
                                   ? 'EXPORTING...'
                                   : 'EXPORT AS XLSX',
-                              style: const TextStyle(
-                                  fontFamily: _kFont,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
+                              style: orbitronStyle(
+                                  fontSize: 11,
                                   letterSpacing: 2)),
                         ),
                       ),
@@ -416,18 +395,17 @@ class _NucleusScreenState extends State<NucleusScreen> {
               // ── App Info ──
               Center(
                   child: Text('PERSONAL OS v3.0',
-                      style: TextStyle(
-                          color: _kTextDim.withOpacity(0.3),
-                          fontFamily: _kFont,
-                          fontSize: 10,
+                      style: orbitronStyle(
+                          fontSize: 9,
+                          color: kDimText.withOpacity(0.3),
                           letterSpacing: 3))),
               const SizedBox(height: 4),
               Center(
                   child: Text('Life Is Game',
-                      style: TextStyle(
-                          color: _kTextDim.withOpacity(0.2),
-                          fontFamily: _kFont,
+                      style: interStyle(
+                          color: kDimText.withOpacity(0.2),
                           fontSize: 10))),
+              const SizedBox(height: 16),
             ],
           );
         },
@@ -435,47 +413,19 @@ class _NucleusScreenState extends State<NucleusScreen> {
     );
   }
 
-  Widget _sectionHeader(String title, IconData icon) {
-    return Row(
-      children: [
-        Icon(icon, color: _kAccent.withOpacity(0.5), size: 18),
-        const SizedBox(width: 8),
-        Text(
-          title,
-          style: TextStyle(
-            color: _kAccent.withOpacity(0.7),
-            fontFamily: _kFont,
-            fontSize: 13,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 3,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Container(
-            height: 1,
-            color: _kAccent.withOpacity(0.1),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _profileRow(IconData icon, String label, String value) {
     return Row(children: [
-      Icon(icon, color: _kAccent.withOpacity(0.5), size: 18),
+      Icon(icon, color: kNeonCyan.withOpacity(0.5), size: 18),
       const SizedBox(width: 12),
       Text('$label:',
-          style: TextStyle(
-              color: _kTextDim, fontFamily: _kFont, fontSize: 12)),
+          style: interStyle(color: kDimText, fontSize: 12)),
       const SizedBox(width: 8),
       Expanded(
           child: Text(value,
-              style: const TextStyle(
+              style: interStyle(
                   color: Colors.white,
-                  fontFamily: _kFont,
                   fontSize: 12,
-                  fontWeight: FontWeight.bold),
+                  fontWeight: FontWeight.w600),
               textAlign: TextAlign.right)),
     ]);
   }
@@ -499,42 +449,35 @@ class _RewardCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final canAfford = credits >= reward.cost && !reward.isRedeemed;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: _kCardBg,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: reward.isRedeemed
-              ? Colors.white.withOpacity(0.05)
-              : _kGold.withOpacity(0.15),
-        ),
-        boxShadow: reward.isRedeemed
-            ? null
-            : [
-                BoxShadow(
-                    color: _kGold.withOpacity(0.04),
-                    blurRadius: 8,
-                    spreadRadius: 1)
-              ],
-      ),
+    return GlassCard(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      borderColor: reward.isRedeemed ? Colors.white : kGold,
+      borderOpacity: reward.isRedeemed ? 0.05 : 0.12,
+      extraShadows: reward.isRedeemed
+          ? null
+          : [
+              BoxShadow(
+                  color: kGold.withOpacity(0.04),
+                  blurRadius: 12,
+                  spreadRadius: 1)
+            ],
       child: Row(
         children: [
           // Icon
           Container(
-            width: 40,
-            height: 40,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-              color: (reward.isRedeemed ? _kTextDim : _kGold)
+              color: (reward.isRedeemed ? kDimText : kGold)
                   .withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(14),
             ),
             child: Icon(
               reward.isRedeemed ? Icons.check_circle : Icons.card_giftcard,
               color: reward.isRedeemed
-                  ? _kTextDim.withOpacity(0.4)
-                  : _kGold,
+                  ? kDimText.withOpacity(0.4)
+                  : kGold,
               size: 22,
             ),
           ),
@@ -546,16 +489,15 @@ class _RewardCard extends StatelessWidget {
               children: [
                 Text(
                   reward.title.toUpperCase(),
-                  style: TextStyle(
-                    color: reward.isRedeemed ? _kTextDim : Colors.white,
-                    fontFamily: _kFont,
+                  style: interStyle(
+                    color: reward.isRedeemed ? kDimText : Colors.white,
                     fontSize: 13,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                     letterSpacing: 1,
                     decoration: reward.isRedeemed
                         ? TextDecoration.lineThrough
                         : null,
-                    decorationColor: _kTextDim,
+                    decorationColor: kDimText,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -565,19 +507,17 @@ class _RewardCard extends StatelessWidget {
                   children: [
                     Icon(Icons.monetization_on,
                         color: reward.isRedeemed
-                            ? _kTextDim.withOpacity(0.3)
-                            : _kGold.withOpacity(0.7),
+                            ? kDimText.withOpacity(0.3)
+                            : kGold.withOpacity(0.7),
                         size: 14),
                     const SizedBox(width: 4),
                     Text(
                       '${reward.cost}',
-                      style: TextStyle(
+                      style: orbitronStyle(
+                        fontSize: 12,
                         color: reward.isRedeemed
-                            ? _kTextDim.withOpacity(0.4)
-                            : _kGold,
-                        fontFamily: _kFont,
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
+                            ? kDimText.withOpacity(0.4)
+                            : kGold,
                       ),
                     ),
                   ],
@@ -589,16 +529,15 @@ class _RewardCard extends StatelessWidget {
           if (reward.isRedeemed)
             Container(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(6),
+                color: Colors.white.withOpacity(0.04),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 'CLAIMED',
-                style: TextStyle(
-                  color: _kTextDim.withOpacity(0.5),
-                  fontFamily: _kFont,
+                style: interStyle(
+                  color: kDimText.withOpacity(0.5),
                   fontSize: 10,
                   letterSpacing: 1,
                 ),
@@ -613,32 +552,30 @@ class _RewardCard extends StatelessWidget {
                   child: Icon(Icons.close,
                       color: Colors.white.withOpacity(0.2), size: 16),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 12),
                 GestureDetector(
                   onTap: canAfford ? onBuy : null,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 6),
+                        horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
                       color: canAfford
-                          ? _kGold.withOpacity(0.15)
+                          ? kGold.withOpacity(0.12)
                           : Colors.white.withOpacity(0.03),
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: canAfford
-                            ? _kGold.withOpacity(0.4)
-                            : Colors.white.withOpacity(0.1),
+                            ? kGold.withOpacity(0.3)
+                            : Colors.white.withOpacity(0.08),
                       ),
                     ),
                     child: Text(
                       'BUY',
-                      style: TextStyle(
+                      style: orbitronStyle(
+                        fontSize: 10,
                         color: canAfford
-                            ? _kGold
-                            : _kTextDim.withOpacity(0.3),
-                        fontFamily: _kFont,
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
+                            ? kGold
+                            : kDimText.withOpacity(0.3),
                         letterSpacing: 1,
                       ),
                     ),

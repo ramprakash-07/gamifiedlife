@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────────────────────
 //  Focus Screen — Pomodoro Focus Chrono + Daily Reminders
-//  Glowing neon cyan countdown ring · +2 XP focus bonus on completion
+//  Glassmorphism cards · Neon glow ring · Orbitron/Inter · 8pt grid
 // ─────────────────────────────────────────────────────────────────────────────
 
 import 'dart:math';
@@ -9,12 +9,7 @@ import 'package:provider/provider.dart';
 import '../database_helper.dart';
 import '../game_provider.dart';
 import '../notification_service.dart';
-
-const Color _kBg = Color(0xFF0A0A0A);
-const Color _kAccent = Color(0xFF00E5FF);
-const Color _kCardBg = Color(0xFF141414);
-const Color _kTextDim = Color(0xFF888888);
-const String _kFont = 'Courier';
+import '../theme/app_theme.dart';
 
 const int _kFocusDurationSeconds = 25 * 60; // 25 minutes
 
@@ -61,8 +56,6 @@ class _FocusScreenState extends State<FocusScreen>
     super.dispose();
   }
 
-  // ── Timer controls ──
-
   void _startTimer() {
     _timerController!.forward(from: _timerController!.value);
     setState(() => _isTimerRunning = true);
@@ -85,43 +78,33 @@ class _FocusScreenState extends State<FocusScreen>
         int? selectedStatId;
         return StatefulBuilder(
           builder: (context, setSt) => AlertDialog(
-            backgroundColor: _kCardBg,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)),
-            title: const Column(
+            backgroundColor: glassDialogBg,
+            shape: glassDialogShape,
+            title: Column(
               children: [
                 Text('⚡ FOCUS COMPLETE',
-                    style: TextStyle(
-                        color: _kAccent,
-                        fontFamily: _kFont,
-                        letterSpacing: 3,
-                        fontSize: 18)),
-                SizedBox(height: 8),
+                    style: orbitronStyle(fontSize: 16, letterSpacing: 3)),
+                const SizedBox(height: 8),
                 Text('Pick a stat to receive +2 XP Focus Bonus',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: _kTextDim,
-                        fontFamily: _kFont,
-                        fontSize: 12)),
+                    style: interStyle(color: kDimText, fontSize: 12)),
               ],
             ),
             content: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               decoration: BoxDecoration(
-                color: _kAccent.withOpacity(0.06),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: _kAccent.withOpacity(0.2)),
+                color: kNeonCyan.withOpacity(0.06),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: kNeonCyan.withOpacity(0.15)),
               ),
               child: DropdownButton<int>(
                 value: selectedStatId,
                 isExpanded: true,
-                dropdownColor: _kCardBg,
+                dropdownColor: glassDialogBg,
                 underline: const SizedBox(),
-                hint: const Text('Select a stat...',
-                    style:
-                        TextStyle(color: _kTextDim, fontFamily: _kFont)),
-                style: const TextStyle(
-                    color: Colors.white, fontFamily: _kFont),
+                hint: Text('Select a stat...',
+                    style: interStyle(color: kDimText, fontSize: 14)),
+                style: interStyle(color: Colors.white),
                 items: stats
                     .map((s) => DropdownMenuItem<int>(
                           value: s.id,
@@ -137,8 +120,8 @@ class _FocusScreenState extends State<FocusScreen>
                   Navigator.pop(ctx);
                   _timerController!.reset();
                 },
-                child: const Text('SKIP',
-                    style: TextStyle(color: _kTextDim)),
+                child: Text('SKIP',
+                    style: interStyle(color: kDimText, fontSize: 12)),
               ),
               TextButton(
                 onPressed: selectedStatId == null
@@ -150,20 +133,24 @@ class _FocusScreenState extends State<FocusScreen>
                         if (mounted) {
                           ScaffoldMessenger.of(this.context)
                               .showSnackBar(SnackBar(
-                            content: const Text(
+                            content: Text(
                               '⚡ Focus Bonus applied! +2 XP · +20 Credits',
-                              style: TextStyle(fontFamily: _kFont),
+                              style: interStyle(
+                                  color: Colors.white, fontSize: 13),
                             ),
-                            backgroundColor: _kAccent.withOpacity(0.3),
+                            backgroundColor: kNeonCyan.withOpacity(0.2),
                             behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16)),
                           ));
                         }
                       },
                 child: Text('CLAIM',
-                    style: TextStyle(
+                    style: orbitronStyle(
+                        fontSize: 12,
                         color: selectedStatId == null
-                            ? _kTextDim.withOpacity(0.4)
-                            : _kAccent)),
+                            ? kDimText.withOpacity(0.4)
+                            : kNeonCyan)),
               ),
             ],
           ),
@@ -199,32 +186,20 @@ class _FocusScreenState extends State<FocusScreen>
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (context, setSt) => AlertDialog(
-          backgroundColor: _kCardBg,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16)),
-          title: Text(existing != null ? 'EDIT REMINDER' : 'NEW REMINDER',
-              style: const TextStyle(
-                  color: _kAccent,
-                  fontFamily: _kFont,
-                  letterSpacing: 3,
-                  fontSize: 18)),
+          backgroundColor: glassDialogBg,
+          shape: glassDialogShape,
+          title: Text(
+              existing != null ? 'EDIT REMINDER' : 'NEW REMINDER',
+              style: orbitronStyle(fontSize: 16, letterSpacing: 3)),
           content: Column(mainAxisSize: MainAxisSize.min, children: [
             TextField(
               controller: ctrl,
               autofocus: true,
-              style: const TextStyle(
-                  color: Colors.white, fontFamily: _kFont),
-              cursorColor: _kAccent,
-              decoration: const InputDecoration(
-                hintText: 'Reminder name...',
-                hintStyle: TextStyle(color: _kTextDim),
-                enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: _kAccent)),
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: _kAccent, width: 2)),
-              ),
+              style: interStyle(color: Colors.white),
+              cursorColor: kNeonCyan,
+              decoration: glassInputDecoration(hintText: 'Reminder name...'),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             GestureDetector(
               onTap: () async {
                 final p = await showTimePicker(
@@ -233,30 +208,28 @@ class _FocusScreenState extends State<FocusScreen>
                     builder: (c, child) => Theme(
                         data: ThemeData.dark().copyWith(
                             colorScheme: const ColorScheme.dark(
-                                primary: _kAccent, surface: _kCardBg)),
+                                primary: kNeonCyan, surface: kCharcoal)),
                         child: child!));
                 if (p != null) setSt(() => time = p);
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 14),
+                    horizontal: 16, vertical: 16),
                 decoration: BoxDecoration(
-                    color: _kAccent.withOpacity(0.08),
-                    borderRadius: BorderRadius.circular(10),
+                    color: kNeonCyan.withOpacity(0.06),
+                    borderRadius: BorderRadius.circular(16),
                     border:
-                        Border.all(color: _kAccent.withOpacity(0.3))),
+                        Border.all(color: kNeonCyan.withOpacity(0.2))),
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.access_time,
-                          color: _kAccent, size: 20),
-                      const SizedBox(width: 10),
+                      Icon(Icons.access_time,
+                          color: kNeonCyan.withOpacity(0.7), size: 20),
+                      const SizedBox(width: 12),
                       Text(time.format(context),
-                          style: const TextStyle(
-                              color: _kAccent,
-                              fontFamily: _kFont,
+                          style: orbitronStyle(
                               fontSize: 22,
-                              fontWeight: FontWeight.bold)),
+                              color: kNeonCyan)),
                     ]),
               ),
             ),
@@ -264,8 +237,8 @@ class _FocusScreenState extends State<FocusScreen>
           actions: [
             TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('CANCEL',
-                    style: TextStyle(color: _kTextDim))),
+                child: Text('CANCEL',
+                    style: interStyle(color: kDimText, fontSize: 12))),
             TextButton(
               onPressed: () async {
                 final title = ctrl.text.trim();
@@ -299,7 +272,7 @@ class _FocusScreenState extends State<FocusScreen>
                 if (mounted) Navigator.pop(ctx);
                 _loadReminders();
               },
-              child: const Text('SAVE', style: TextStyle(color: _kAccent)),
+              child: Text('SAVE', style: orbitronStyle(fontSize: 12, color: kNeonCyan)),
             ),
           ],
         ),
@@ -335,21 +308,22 @@ class _FocusScreenState extends State<FocusScreen>
       body: CustomScrollView(
         slivers: [
           // ── Focus Chrono Section ──
-          SliverToBoxAdapter(
+          const SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-              child: _sectionHeader('FOCUS CHRONO', Icons.timer),
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: SectionHeader(title: 'FOCUS CHRONO', icon: Icons.timer),
             ),
           ),
           SliverToBoxAdapter(
             child: _buildTimerSection(),
           ),
           // ── Reminders Section ──
-          SliverToBoxAdapter(
+          const SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
-              child: _sectionHeader(
-                  'DAILY REMINDERS', Icons.notifications_active),
+              padding: EdgeInsets.fromLTRB(16, 24, 16, 0),
+              child: SectionHeader(
+                  title: 'DAILY REMINDERS',
+                  icon: Icons.notifications_active),
             ),
           ),
           if (_loadingReminders)
@@ -357,7 +331,8 @@ class _FocusScreenState extends State<FocusScreen>
               child: Center(
                   child: Padding(
                 padding: EdgeInsets.all(32),
-                child: CircularProgressIndicator(color: _kAccent),
+                child:
+                    CircularProgressIndicator(color: kNeonCyan, strokeWidth: 2),
               )),
             )
           else if (_reminders.isEmpty)
@@ -367,10 +342,8 @@ class _FocusScreenState extends State<FocusScreen>
                 child: Center(
                   child: Text(
                     'No reminders. Tap + to add one.',
-                    style: TextStyle(
-                        color: _kTextDim.withOpacity(0.7),
-                        fontSize: 13,
-                        fontFamily: _kFont),
+                    style: interStyle(
+                        color: kDimText.withOpacity(0.7), fontSize: 13),
                   ),
                 ),
               ),
@@ -390,78 +363,69 @@ class _FocusScreenState extends State<FocusScreen>
                           padding: const EdgeInsets.only(right: 16),
                           margin: const EdgeInsets.only(bottom: 12),
                           decoration: BoxDecoration(
-                              color: Colors.red.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(12)),
-                          child: const Icon(Icons.delete_outline,
-                              color: Colors.red)),
+                              color: kHardRed.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(24)),
+                          child: Icon(Icons.delete_outline,
+                              color: kHardRed)),
                       onDismissed: (_) => _deleteReminder(r),
                       child: GestureDetector(
                         onTap: () =>
                             _showAddReminderDialog(existing: r),
-                        child: Container(
+                        child: GlassCard(
                           margin: const EdgeInsets.only(bottom: 12),
                           padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                              color: _kCardBg,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                  color: r.enabled
-                                      ? _kAccent.withOpacity(0.15)
-                                      : Colors.white.withOpacity(0.05)),
-                              boxShadow: r.enabled
-                                  ? [
-                                      BoxShadow(
-                                          color:
-                                              _kAccent.withOpacity(0.06),
-                                          blurRadius: 12,
-                                          spreadRadius: 1)
-                                    ]
-                                  : null),
+                          borderColor: r.enabled ? kNeonCyan : Colors.white,
+                          borderOpacity: r.enabled ? 0.15 : 0.05,
+                          extraShadows: r.enabled
+                              ? [
+                                  BoxShadow(
+                                      color: kNeonCyan.withOpacity(0.06),
+                                      blurRadius: 16,
+                                      spreadRadius: 1)
+                                ]
+                              : null,
                           child: Row(children: [
                             Container(
-                                width: 44,
-                                height: 44,
+                                width: 48,
+                                height: 48,
                                 decoration: BoxDecoration(
-                                    color: _kAccent.withOpacity(
+                                    color: kNeonCyan.withOpacity(
                                         r.enabled ? 0.1 : 0.03),
                                     borderRadius:
-                                        BorderRadius.circular(10)),
+                                        BorderRadius.circular(16)),
                                 child: Icon(Icons.flag_rounded,
                                     color: r.enabled
-                                        ? _kAccent
-                                        : _kTextDim.withOpacity(0.4),
+                                        ? kNeonCyan
+                                        : kDimText.withOpacity(0.4),
                                     size: 22)),
-                            const SizedBox(width: 14),
+                            const SizedBox(width: 16),
                             Expanded(
                                 child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
                                   Text(r.title.toUpperCase(),
-                                      style: TextStyle(
+                                      style: interStyle(
                                           color: r.enabled
                                               ? Colors.white
-                                              : _kTextDim,
-                                          fontFamily: _kFont,
+                                              : kDimText,
                                           fontSize: 14,
-                                          fontWeight: FontWeight.bold,
+                                          fontWeight: FontWeight.w600,
                                           letterSpacing: 1.5)),
                                   const SizedBox(height: 4),
                                   Text(r.timeString,
-                                      style: TextStyle(
+                                      style: orbitronStyle(
+                                          fontSize: 18,
                                           color: r.enabled
-                                              ? _kAccent
-                                              : _kTextDim
-                                                  .withOpacity(0.5),
-                                          fontFamily: _kFont,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold)),
+                                              ? kNeonCyan
+                                              : kDimText
+                                                  .withOpacity(0.5))),
                                 ])),
                             Switch(
                                 value: r.enabled,
-                                activeColor: _kAccent,
+                                activeColor: kNeonCyan,
                                 inactiveTrackColor:
-                                    Colors.white.withOpacity(0.1),
+                                    Colors.white.withOpacity(0.08),
                                 onChanged: (_) =>
                                     _toggleReminder(r)),
                           ]),
@@ -476,11 +440,9 @@ class _FocusScreenState extends State<FocusScreen>
           const SliverPadding(padding: EdgeInsets.only(bottom: 80)),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: GlassFAB(
         heroTag: 'focus_fab',
-        backgroundColor: _kAccent,
         onPressed: () => _showAddReminderDialog(),
-        child: const Icon(Icons.add, color: _kBg, size: 28),
       ),
     );
   }
@@ -488,20 +450,17 @@ class _FocusScreenState extends State<FocusScreen>
   Widget _buildTimerSection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: _kCardBg,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: _kAccent.withOpacity(0.15)),
-          boxShadow: [
-            BoxShadow(
-              color: _kAccent.withOpacity(0.08),
-              blurRadius: 20,
-              spreadRadius: 2,
-            ),
-          ],
-        ),
+      child: GlassCard(
+        padding: const EdgeInsets.all(32),
+        borderColor: kNeonCyan,
+        borderOpacity: 0.15,
+        extraShadows: [
+          BoxShadow(
+            color: kNeonCyan.withOpacity(0.08),
+            blurRadius: 24,
+            spreadRadius: 4,
+          ),
+        ],
         child: Column(
           children: [
             // Circular timer
@@ -520,16 +479,14 @@ class _FocusScreenState extends State<FocusScreen>
                   return CustomPaint(
                     painter: _TimerRingPainter(
                       progress: 1.0 - elapsed,
-                      glowColor: _kAccent,
+                      glowColor: kNeonCyan,
                     ),
                     child: Center(
                       child: Text(
                         '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}',
-                        style: const TextStyle(
-                          color: _kAccent,
-                          fontFamily: _kFont,
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
+                        style: orbitronStyle(
+                          fontSize: 36,
+                          color: kNeonCyan,
                           letterSpacing: 4,
                         ),
                       ),
@@ -538,7 +495,7 @@ class _FocusScreenState extends State<FocusScreen>
                 },
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             // Timer controls
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -546,60 +503,30 @@ class _FocusScreenState extends State<FocusScreen>
                 if (!_isTimerRunning)
                   _TimerButton(
                     label: 'START',
-                    color: _kAccent,
+                    color: kNeonCyan,
                     onTap: _startTimer,
                   )
                 else
                   _TimerButton(
                     label: 'CANCEL',
-                    color: const Color(0xFFFF1744),
+                    color: kHardRed,
                     onTap: _cancelTimer,
                   ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             Text(
               _isTimerRunning
                   ? 'Focus session in progress...'
                   : '25 MIN DEEP FOCUS',
-              style: TextStyle(
-                color: _kTextDim.withOpacity(0.6),
-                fontFamily: _kFont,
+              style: interStyle(
+                color: kDimText.withOpacity(0.6),
                 fontSize: 11,
                 letterSpacing: 2,
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _sectionHeader(String title, IconData icon) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        children: [
-          Icon(icon, color: _kAccent.withOpacity(0.5), size: 18),
-          const SizedBox(width: 8),
-          Text(
-            title,
-            style: TextStyle(
-              color: _kAccent.withOpacity(0.7),
-              fontFamily: _kFont,
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 3,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Container(
-              height: 1,
-              color: _kAccent.withOpacity(0.1),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -623,22 +550,27 @@ class _TimerButton extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         splashColor: color.withOpacity(0.2),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(color: color.withOpacity(0.5), width: 2),
             color: color.withOpacity(0.1),
+            boxShadow: [
+              BoxShadow(
+                color: color.withOpacity(0.2),
+                blurRadius: 16,
+                spreadRadius: 1,
+              ),
+            ],
           ),
           child: Text(
             label,
-            style: TextStyle(
+            style: orbitronStyle(
+              fontSize: 14,
               color: color,
-              fontFamily: _kFont,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
               letterSpacing: 3,
             ),
           ),
@@ -686,10 +618,10 @@ class _TimerRingPainter extends CustomPainter {
     // Glow effect
     final glowPaint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth + 8
+      ..strokeWidth = strokeWidth + 10
       ..strokeCap = StrokeCap.round
       ..color = glowColor.withOpacity(0.15)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 16);
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
       -pi / 2,

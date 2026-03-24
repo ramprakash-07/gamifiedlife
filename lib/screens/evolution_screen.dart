@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────────────────────
 //  Evolution Screen — RPG Stat Tracker + Quest Board
-//  Stats with 0–9 rollover · Quest system with difficulty-based XP · Credits
+//  Glassmorphism cards · Glow XP bars · Orbitron/Inter fonts · 8pt grid
 // ─────────────────────────────────────────────────────────────────────────────
 
 import 'package:flutter/material.dart';
@@ -8,19 +8,9 @@ import 'package:home_widget/home_widget.dart';
 import 'package:provider/provider.dart';
 import '../database_helper.dart';
 import '../game_provider.dart';
+import '../theme/app_theme.dart';
 
-// ─── Constants ───────────────────────────────────────────────────────────────
-const Color kBackground = Color(0xFF0A0A0A);
-const Color kAccent = Color(0xFF00E5FF);
-const Color kCardBg = Color(0xFF141414);
-const Color kTextDim = Color(0xFF888888);
-const String kFontFamily = 'Courier';
 const String kAndroidWidgetName = 'StatWidgetProvider';
-
-// Difficulty colors
-const Color kEasyColor = Color(0xFF4CAF50);
-const Color kMediumColor = Color(0xFFFF9800);
-const Color kHardColor = Color(0xFFFF1744);
 
 // ─── State Notifier ──────────────────────────────────────────────────────────
 class StatNotifier extends ValueNotifier<List<Stat>> {
@@ -148,9 +138,9 @@ class _EvolutionScreenState extends State<EvolutionScreen> {
   void _showFabOptions() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: kCardBg,
+      backgroundColor: glassDialogBg,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) => Padding(
         padding: const EdgeInsets.all(24),
@@ -158,9 +148,10 @@ class _EvolutionScreenState extends State<EvolutionScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 40, height: 4,
+              width: 40,
+              height: 4,
               decoration: BoxDecoration(
-                color: kAccent.withOpacity(0.3),
+                color: kNeonCyan.withOpacity(0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -173,7 +164,7 @@ class _EvolutionScreenState extends State<EvolutionScreen> {
                 _showAddStatDialog();
               },
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             _OptionTile(
               icon: Icons.flag_rounded,
               label: 'ADD NEW QUEST',
@@ -193,30 +184,20 @@ class _EvolutionScreenState extends State<EvolutionScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: kCardBg,
-        title: const Text('NEW STAT',
-            style: TextStyle(
-                color: kAccent,
-                fontFamily: kFontFamily,
-                letterSpacing: 3)),
+        backgroundColor: glassDialogBg,
+        shape: glassDialogShape,
+        title: Text('NEW STAT', style: orbitronStyle(fontSize: 16, letterSpacing: 3)),
         content: TextField(
           controller: controller,
           autofocus: true,
-          style: const TextStyle(color: Colors.white, fontFamily: kFontFamily),
-          cursorColor: kAccent,
-          decoration: const InputDecoration(
-            hintText: 'Stat name...',
-            hintStyle: TextStyle(color: kTextDim),
-            enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: kAccent)),
-            focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: kAccent, width: 2)),
-          ),
+          style: interStyle(color: Colors.white),
+          cursorColor: kNeonCyan,
+          decoration: glassInputDecoration(hintText: 'Stat name...'),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('CANCEL', style: TextStyle(color: kTextDim)),
+            child: Text('CANCEL', style: interStyle(color: kDimText, fontSize: 12)),
           ),
           TextButton(
             onPressed: () {
@@ -229,7 +210,7 @@ class _EvolutionScreenState extends State<EvolutionScreen> {
               }
               Navigator.pop(ctx);
             },
-            child: const Text('CREATE', style: TextStyle(color: kAccent)),
+            child: Text('CREATE', style: orbitronStyle(fontSize: 12, color: kNeonCyan)),
           ),
         ],
       ),
@@ -247,15 +228,10 @@ class _EvolutionScreenState extends State<EvolutionScreen> {
         builder: (context, setSt) {
           final stats = _notifier.value;
           return AlertDialog(
-            backgroundColor: kCardBg,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)),
-            title: const Text('NEW QUEST',
-                style: TextStyle(
-                    color: kAccent,
-                    fontFamily: kFontFamily,
-                    letterSpacing: 3,
-                    fontSize: 18)),
+            backgroundColor: glassDialogBg,
+            shape: glassDialogShape,
+            title: Text('NEW QUEST',
+                style: orbitronStyle(fontSize: 16, letterSpacing: 3)),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -263,27 +239,17 @@ class _EvolutionScreenState extends State<EvolutionScreen> {
                   TextField(
                     controller: titleCtrl,
                     autofocus: true,
-                    style: const TextStyle(
-                        color: Colors.white, fontFamily: kFontFamily),
-                    cursorColor: kAccent,
-                    decoration: const InputDecoration(
-                      hintText: 'Quest title...',
-                      hintStyle: TextStyle(color: kTextDim),
-                      enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: kAccent)),
-                      focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: kAccent, width: 2)),
-                    ),
+                    style: interStyle(color: Colors.white),
+                    cursorColor: kNeonCyan,
+                    decoration: glassInputDecoration(hintText: 'Quest title...'),
                   ),
-                  const SizedBox(height: 20),
-                  // Difficulty picker
-                  const Align(
+                  const SizedBox(height: 24),
+                  Align(
                     alignment: Alignment.centerLeft,
                     child: Text('DIFFICULTY',
-                        style: TextStyle(
-                            color: kTextDim,
-                            fontFamily: kFontFamily,
-                            fontSize: 11,
+                        style: orbitronStyle(
+                            fontSize: 10,
+                            color: kDimText,
                             letterSpacing: 2)),
                   ),
                   const SizedBox(height: 8),
@@ -291,55 +257,51 @@ class _EvolutionScreenState extends State<EvolutionScreen> {
                     children: [
                       _DifficultyChip(
                         label: 'EASY',
-                        color: kEasyColor,
+                        color: kEasyGreen,
                         selected: difficulty == 'easy',
                         onTap: () => setSt(() => difficulty = 'easy'),
                       ),
                       const SizedBox(width: 8),
                       _DifficultyChip(
                         label: 'MED',
-                        color: kMediumColor,
+                        color: kMediumOrange,
                         selected: difficulty == 'medium',
                         onTap: () => setSt(() => difficulty = 'medium'),
                       ),
                       const SizedBox(width: 8),
                       _DifficultyChip(
                         label: 'HARD',
-                        color: kHardColor,
+                        color: kHardRed,
                         selected: difficulty == 'hard',
                         onTap: () => setSt(() => difficulty = 'hard'),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
-                  // Stat assignment
-                  const Align(
+                  const SizedBox(height: 24),
+                  Align(
                     alignment: Alignment.centerLeft,
                     child: Text('ASSIGN STAT',
-                        style: TextStyle(
-                            color: kTextDim,
-                            fontFamily: kFontFamily,
-                            fontSize: 11,
+                        style: orbitronStyle(
+                            fontSize: 10,
+                            color: kDimText,
                             letterSpacing: 2)),
                   ),
                   const SizedBox(height: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
-                      color: kAccent.withOpacity(0.06),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: kAccent.withOpacity(0.2)),
+                      color: kNeonCyan.withOpacity(0.06),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: kNeonCyan.withOpacity(0.15)),
                     ),
                     child: DropdownButton<int>(
                       value: selectedStatId,
                       isExpanded: true,
-                      dropdownColor: kCardBg,
+                      dropdownColor: glassDialogBg,
                       underline: const SizedBox(),
-                      hint: const Text('Select a stat...',
-                          style: TextStyle(
-                              color: kTextDim, fontFamily: kFontFamily)),
-                      style: const TextStyle(
-                          color: Colors.white, fontFamily: kFontFamily),
+                      hint: Text('Select a stat...',
+                          style: interStyle(color: kDimText, fontSize: 14)),
+                      style: interStyle(color: Colors.white),
                       items: stats
                           .map((s) => DropdownMenuItem<int>(
                                 value: s.id,
@@ -355,8 +317,7 @@ class _EvolutionScreenState extends State<EvolutionScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child:
-                    const Text('CANCEL', style: TextStyle(color: kTextDim)),
+                child: Text('CANCEL', style: interStyle(color: kDimText, fontSize: 12)),
               ),
               TextButton(
                 onPressed: () {
@@ -369,8 +330,7 @@ class _EvolutionScreenState extends State<EvolutionScreen> {
                       );
                   Navigator.pop(ctx);
                 },
-                child:
-                    const Text('CREATE', style: TextStyle(color: kAccent)),
+                child: Text('CREATE', style: orbitronStyle(fontSize: 12, color: kNeonCyan)),
               ),
             ],
           );
@@ -384,7 +344,12 @@ class _EvolutionScreenState extends State<EvolutionScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: _loading
-          ? const Center(child: CircularProgressIndicator(color: kAccent))
+          ? Center(
+              child: CircularProgressIndicator(
+                color: kNeonCyan,
+                strokeWidth: 2,
+              ),
+            )
           : ValueListenableBuilder<List<Stat>>(
               valueListenable: _notifier,
               builder: (context, stats, _) {
@@ -394,9 +359,10 @@ class _EvolutionScreenState extends State<EvolutionScreen> {
                       slivers: [
                         // ─── Stats Section ───
                         SliverPadding(
-                          padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                          sliver: SliverToBoxAdapter(
-                            child: _sectionHeader('STATS', Icons.auto_awesome),
+                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                          sliver: const SliverToBoxAdapter(
+                            child: SectionHeader(
+                                title: 'STATS', icon: Icons.auto_awesome),
                           ),
                         ),
                         if (stats.isEmpty)
@@ -408,14 +374,14 @@ class _EvolutionScreenState extends State<EvolutionScreen> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Icon(Icons.auto_awesome,
-                                        color: kAccent.withOpacity(0.3),
+                                        color: kNeonCyan.withOpacity(0.3),
                                         size: 48),
-                                    const SizedBox(height: 12),
-                                    const Text(
+                                    const SizedBox(height: 16),
+                                    Text(
                                       'No stats yet. Tap + to begin.',
                                       textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          color: kTextDim, fontSize: 14),
+                                      style: interStyle(
+                                          color: kDimText, fontSize: 14),
                                     ),
                                   ],
                                 ),
@@ -461,10 +427,11 @@ class _EvolutionScreenState extends State<EvolutionScreen> {
                           ),
                         // ─── Quest Board Section ───
                         SliverPadding(
-                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                          sliver: SliverToBoxAdapter(
-                            child: _sectionHeader(
-                                'QUEST BOARD', Icons.flag_rounded),
+                          padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
+                          sliver: const SliverToBoxAdapter(
+                            child: SectionHeader(
+                                title: 'QUEST BOARD',
+                                icon: Icons.flag_rounded),
                           ),
                         ),
                         if (gp.quests.isEmpty)
@@ -474,10 +441,9 @@ class _EvolutionScreenState extends State<EvolutionScreen> {
                               child: Center(
                                 child: Text(
                                   'No active quests. Tap + to add one.',
-                                  style: TextStyle(
-                                      color: kTextDim.withOpacity(0.7),
-                                      fontSize: 13,
-                                      fontFamily: kFontFamily),
+                                  style: interStyle(
+                                      color: kDimText.withOpacity(0.7),
+                                      fontSize: 13),
                                 ),
                               ),
                             ),
@@ -490,11 +456,11 @@ class _EvolutionScreenState extends State<EvolutionScreen> {
                               delegate: SliverChildBuilderDelegate(
                                 (context, index) {
                                   final quest = gp.quests[index];
-                                  // Find stat name
                                   final statName = stats
                                       .where((s) => s.id == quest.statId)
                                       .map((s) => s.name)
-                                      .firstOrNull ?? '???';
+                                      .firstOrNull ??
+                                      '???';
                                   return _QuestCard(
                                     quest: quest,
                                     statName: statName,
@@ -508,12 +474,16 @@ class _EvolutionScreenState extends State<EvolutionScreen> {
                                             .showSnackBar(SnackBar(
                                           content: Text(
                                             '⚔️ Quest complete! +$xp XP to $statName · +${xp * 10} Credits',
-                                            style: const TextStyle(
-                                                fontFamily: kFontFamily),
+                                            style: interStyle(
+                                                color: Colors.white,
+                                                fontSize: 13),
                                           ),
                                           backgroundColor:
-                                              kAccent.withOpacity(0.3),
+                                              kNeonCyan.withOpacity(0.2),
                                           behavior: SnackBarBehavior.floating,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(16)),
                                         ));
                                       }
                                     },
@@ -526,7 +496,6 @@ class _EvolutionScreenState extends State<EvolutionScreen> {
                               ),
                             ),
                           ),
-                        // Bottom padding
                         const SliverPadding(
                             padding: EdgeInsets.only(bottom: 80)),
                       ],
@@ -535,40 +504,9 @@ class _EvolutionScreenState extends State<EvolutionScreen> {
                 );
               },
             ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: GlassFAB(
         heroTag: 'evolution_fab',
-        backgroundColor: kAccent,
         onPressed: _showFabOptions,
-        child: const Icon(Icons.add, color: kBackground, size: 28),
-      ),
-    );
-  }
-
-  Widget _sectionHeader(String title, IconData icon) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        children: [
-          Icon(icon, color: kAccent.withOpacity(0.5), size: 18),
-          const SizedBox(width: 8),
-          Text(
-            title,
-            style: TextStyle(
-              color: kAccent.withOpacity(0.7),
-              fontFamily: kFontFamily,
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 3,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Container(
-              height: 1,
-              color: kAccent.withOpacity(0.1),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -589,25 +527,23 @@ class _OptionTile extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        splashColor: kAccent.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        splashColor: kNeonCyan.withOpacity(0.1),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: kAccent.withOpacity(0.15)),
-            color: kAccent.withOpacity(0.04),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: kNeonCyan.withOpacity(0.15)),
+            color: kNeonCyan.withOpacity(0.04),
           ),
           child: Row(
             children: [
-              Icon(icon, color: kAccent, size: 22),
-              const SizedBox(width: 14),
+              Icon(icon, color: kNeonCyan, size: 22),
+              const SizedBox(width: 16),
               Text(label,
-                  style: const TextStyle(
+                  style: orbitronStyle(
+                      fontSize: 12,
                       color: Colors.white,
-                      fontFamily: kFontFamily,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
                       letterSpacing: 2)),
             ],
           ),
@@ -636,24 +572,23 @@ class _DifficultyChip extends StatelessWidget {
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: selected ? color.withOpacity(0.2) : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
+            color: selected ? color.withOpacity(0.15) : Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: selected ? color : kTextDim.withOpacity(0.3),
+              color: selected ? color : kDimText.withOpacity(0.2),
               width: selected ? 2 : 1,
             ),
           ),
           child: Center(
             child: Text(
               label,
-              style: TextStyle(
-                color: selected ? color : kTextDim,
-                fontFamily: kFontFamily,
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
+              style: orbitronStyle(
+                fontSize: 10,
+                color: selected ? color : kDimText,
                 letterSpacing: 1.5,
               ),
             ),
@@ -681,55 +616,45 @@ class _QuestCard extends StatelessWidget {
   Color get _diffColor {
     switch (quest.difficulty) {
       case 'easy':
-        return kEasyColor;
+        return kEasyGreen;
       case 'medium':
-        return kMediumColor;
+        return kMediumOrange;
       case 'hard':
-        return kHardColor;
+        return kHardRed;
       default:
-        return kEasyColor;
+        return kEasyGreen;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GlassCard(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: kCardBg,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _diffColor.withOpacity(0.2)),
-        boxShadow: [
-          BoxShadow(
-              color: _diffColor.withOpacity(0.05),
-              blurRadius: 10,
-              spreadRadius: 1),
-        ],
-      ),
+      padding: const EdgeInsets.all(16),
+      borderColor: _diffColor,
+      borderOpacity: 0.2,
       child: Row(
         children: [
-          // Left: difficulty badge
+          // Left: XP badge
           Container(
-            width: 44,
-            height: 44,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
               color: _diffColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: _diffColor.withOpacity(0.2)),
             ),
             child: Center(
               child: Text(
                 '+${quest.xpReward}',
-                style: TextStyle(
+                style: orbitronStyle(
+                  fontSize: 14,
                   color: _diffColor,
-                  fontFamily: kFontFamily,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           // Middle: quest info
           Expanded(
             child: Column(
@@ -737,46 +662,42 @@ class _QuestCard extends StatelessWidget {
               children: [
                 Text(
                   quest.title.toUpperCase(),
-                  style: const TextStyle(
+                  style: interStyle(
                     color: Colors.white,
-                    fontFamily: kFontFamily,
                     fontSize: 13,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                     letterSpacing: 1,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 8),
                 Row(
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
+                          horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(
-                        color: _diffColor.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(4),
+                        color: _diffColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         quest.difficulty.toUpperCase(),
-                        style: TextStyle(
+                        style: orbitronStyle(
+                          fontSize: 8,
                           color: _diffColor,
-                          fontFamily: kFontFamily,
-                          fontSize: 9,
-                          fontWeight: FontWeight.bold,
                           letterSpacing: 1,
                         ),
                       ),
                     ),
                     const SizedBox(width: 8),
                     Icon(Icons.auto_awesome,
-                        color: kAccent.withOpacity(0.4), size: 12),
-                    const SizedBox(width: 3),
+                        color: kNeonCyan.withOpacity(0.4), size: 12),
+                    const SizedBox(width: 4),
                     Text(
                       statName.toUpperCase(),
-                      style: TextStyle(
-                        color: kAccent.withOpacity(0.6),
-                        fontFamily: kFontFamily,
+                      style: interStyle(
+                        color: kNeonCyan.withOpacity(0.6),
                         fontSize: 10,
                         letterSpacing: 1,
                       ),
@@ -799,19 +720,17 @@ class _QuestCard extends StatelessWidget {
                 onTap: onComplete,
                 child: Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     color: _diffColor.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: _diffColor.withOpacity(0.4)),
                   ),
                   child: Text(
                     'DONE',
-                    style: TextStyle(
+                    style: orbitronStyle(
+                      fontSize: 9,
                       color: _diffColor,
-                      fontFamily: kFontFamily,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
                       letterSpacing: 1,
                     ),
                   ),
@@ -841,21 +760,18 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: kCardBg,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: kAccent.withOpacity(0.15)),
-        boxShadow: [
-          BoxShadow(
-            color: kAccent.withOpacity(0.06),
-            blurRadius: 12,
-            spreadRadius: 1,
-          ),
-        ],
-      ),
+    return GlassCard(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(20),
+      borderColor: kNeonCyan,
+      borderOpacity: 0.15,
+      extraShadows: [
+        BoxShadow(
+          color: kNeonCyan.withOpacity(0.06),
+          blurRadius: 20,
+          spreadRadius: 2,
+        ),
+      ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -864,30 +780,26 @@ class _StatCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   stat.name.toUpperCase(),
-                  style: const TextStyle(
+                  style: orbitronStyle(
+                    fontSize: 14,
                     color: Colors.white,
-                    fontFamily: kFontFamily,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
                     letterSpacing: 2,
                   ),
                 ),
               ),
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: kAccent.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: kAccent.withOpacity(0.3)),
+                  color: kNeonCyan.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: kNeonCyan.withOpacity(0.25)),
                 ),
                 child: Text(
                   'LVL ${stat.level}',
-                  style: const TextStyle(
-                    color: kAccent,
-                    fontFamily: kFontFamily,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
+                  style: orbitronStyle(
+                    fontSize: 11,
+                    color: kNeonCyan,
                     letterSpacing: 1.5,
                   ),
                 ),
@@ -896,45 +808,31 @@ class _StatCard extends StatelessWidget {
               GestureDetector(
                 onTap: onDelete,
                 child: Icon(Icons.close,
-                    color: Colors.white.withOpacity(0.25), size: 18),
+                    color: Colors.white.withOpacity(0.2), size: 18),
               ),
             ],
           ),
-          const SizedBox(height: 14),
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(6),
-              boxShadow: [
-                BoxShadow(
-                  color: kAccent.withOpacity(0.25),
-                  blurRadius: 8,
-                  spreadRadius: 0,
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: LinearProgressIndicator(
-                value: stat.value / 10.0,
-                minHeight: 10,
-                backgroundColor: Colors.white.withOpacity(0.08),
-                valueColor: const AlwaysStoppedAnimation<Color>(kAccent),
-              ),
-            ),
+          const SizedBox(height: 16),
+          // ── Animated Glow XP Bar ──
+          GlowProgressBar(
+            value: stat.value / 10.0,
+            color: kNeonCyan,
+            glowColor: kNeonCyan,
+            height: 10,
+            borderRadius: 5,
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Align(
             alignment: Alignment.centerRight,
             child: Text(
               '${stat.value} / 10',
-              style: TextStyle(
-                color: kAccent.withOpacity(0.6),
-                fontFamily: kFontFamily,
+              style: interStyle(
+                color: kNeonCyan.withOpacity(0.6),
                 fontSize: 11,
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -962,17 +860,17 @@ class _ActionButton extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        splashColor: kAccent.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(16),
+        splashColor: kNeonCyan.withOpacity(0.2),
         child: Container(
           width: 56,
           height: 56,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: kAccent.withOpacity(0.3)),
-            color: kAccent.withOpacity(0.06),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: kNeonCyan.withOpacity(0.2)),
+            color: kNeonCyan.withOpacity(0.05),
           ),
-          child: Icon(icon, color: kAccent, size: 28),
+          child: Icon(icon, color: kNeonCyan, size: 28),
         ),
       ),
     );
